@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Quick and dirty cluster update script
-# author: stuart@cloudera.com
-# TODO: replace this shit with puppet
+# Quick and dirty cluster update script, based on a hack by Stuart Horsman
+# author: quintona@gmail.com
 
 keyFile=$1
 red='\033[0;31m'
@@ -17,18 +16,14 @@ fi
 for host in `cat hosts.txt`
 do
 	echo -e "${red}--> Creating cloudera directory on $host...${NC}"
-	ssh -i $keyFile ec2-user@$host 'mkdir -p cloudera/files'
-
-	# Copy all files to host
-	echo -e "${red}--> Copying files to $host...${NC}"
-	scp -i $keyFile -r files/* ec2-user@$host:cloudera/files
+	ssh -i $keyFile -o "StrictHostKeyChecking no" ubuntu@$host 'mkdir -p cloudera/files'
 
 	for script in `cat scripts.txt`
 	do
 		echo -e "${red}--> Copying $script to $host...${NC}"
-		scp -i $keyFile $script ec2-user@$host:cloudera
+		scp -i $keyFile -o "StrictHostKeyChecking no" $script ubuntu@$host:cloudera
 		echo -e "${red}--> Executing $script on $host...${NC}"
-		ssh -i $keyFile ec2-user@$host -t "sudo bash /home/ec2-user/cloudera/$script"
+		ssh -i $keyFile -o "StrictHostKeyChecking no" ubuntu@$host -t "sudo bash /home/ubuntu/cloudera/$script"
 	done
 done
 
