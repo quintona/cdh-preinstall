@@ -23,8 +23,10 @@ do
 		echo -e "${red}--> Copying $script to $host...${NC}"
 		scp -i $keyFile -o "StrictHostKeyChecking no" $script ubuntu@$host:cloudera
 		echo -e "${red}--> Executing $script on $host...${NC}"
-		ssh -i $keyFile -o "StrictHostKeyChecking no" ubuntu@$host -t "sudo bash /home/ubuntu/cloudera/$script"
+		ssh -i $keyFile -o "StrictHostKeyChecking no" ubuntu@$host -t "sudo bash /home/ubuntu/cloudera/$script" &
 	done
 done
+
+wait
 
 exit 0
